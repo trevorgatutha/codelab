@@ -11,11 +11,11 @@ FEMALE_GENDER = "Female"
 
 
 
-#Read male names from male_students.csv
+#Read male names
 male_df = pd.read_csv('male_students.csv')
 males = male_df['First Name'].tolist()  # Assuming the column name is 'First Name'
 
-# Read female names from female_students.csv
+# Read female names
 female_df = pd.read_csv('female_students.csv')
 females = female_df['First Name'].tolist()  # Assuming the column name is 'First Name'
 
@@ -26,17 +26,15 @@ model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
 male_embeddings = model.encode(males)
 female_embeddings = model.encode(females)
 
-# Calculate similarity matrix
+
 male_norm = np.linalg.norm(male_embeddings, axis=0, keepdims=True)
 female_norm = np.linalg.norm(female_embeddings, axis=0)
 
-# Replace zero values with 1 to avoid division by zero
 male_norm = np.where(male_norm == 0, 1, male_norm)
 female_norm = np.where(female_norm == 0, 1, female_norm)
 
 similarity_matrix = np.dot(male_embeddings, female_embeddings.T) / (male_norm * female_norm)
 
-# Filter similarities with at least 50% similarity
 filtered_similarities = []
 for i in range(len(males)):
     for j in range(len(females)):
